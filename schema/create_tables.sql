@@ -3,7 +3,7 @@ CREATE TABLE student(
     first_name VARCHAR(20) NOT NULL,
     last_name VARCHAR(20) NOT NULL,
     middle_name VARCHAR(20) NOT NULL,
-    email VARCHAR(20) NOT NULL,
+    email VARCHAR(50) NOT NULL,
     join_date DATE NOT NULL,
 
     CONSTRAINT pk_stu PRIMARY KEY (student_id),
@@ -17,7 +17,7 @@ CREATE TABLE instructor(
     first_name VARCHAR(20) NOT NULL,
     last_name VARCHAR(20) NOT NULL,
     middle_name VARCHAR(20) NOT NULL,
-    email VARCHAR(20) NOT NULL,
+    email VARCHAR(50) NOT NULL,
     bio TEXT,
     CONSTRAINT pk_instruct PRIMARY KEY (instructor_id),
     CONSTRAINT uk_email_instruct UNIQUE (email)
@@ -27,7 +27,7 @@ CREATE TABLE instructor(
 
 CREATE TABLE course(
     course_code VARCHAR(20),
-    title VARCHAR(20) NOT NULL,
+    title VARCHAR(100) NOT NULL,
     description TEXT NOT NULL,
     price DECIMAL(10,2) NOT NULL,
     difficulty_level VARCHAR(20) NOT NULL,
@@ -49,7 +49,8 @@ CREATE TABLE enrollment(
     CONSTRAINT pk_enrolmt PRIMARY KEY (enrollment_id),
     CONSTRAINT chk_compltn_stat CHECK (completion_status IN ('Not started','In Progress','Completed')),
     CONSTRAINT fk_enrolmt_stu_id FOREIGN KEY (student_id) REFERENCES student(student_id),
-    CONSTRAINT fk_enrolmt_cos_code FOREIGN KEY (course_code) REFERENCES course(course_code)
+    CONSTRAINT fk_enrolmt_cos_code FOREIGN KEY (course_code) REFERENCES course(course_code),
+    CONSTRAINT uk_enrolmt UNIQUE (student_id,course_code)
     )
     ENGINE = InnoDB AUTO_INCREMENT = 100000;
 
@@ -64,13 +65,14 @@ CREATE TABLE review(
     CONSTRAINT pk_review PRIMARY KEY (review_id),
     CONSTRAINT chk_rating_review CHECK (rating BETWEEN 1 AND 5),
     CONSTRAINT fk_review_stu_id FOREIGN KEY (student_id) REFERENCES student(student_id),
-    CONSTRAINT fk_review_cos_code FOREIGN KEY (course_code) REFERENCES course(course_code)
+    CONSTRAINT fk_review_cos_code FOREIGN KEY (course_code) REFERENCES course(course_code),
+    CONSTRAINT uk_review UNIQUE (student_id,course_code)
 )
     ENGINE = InnoDB AUTO_INCREMENT = 500000;
 
 
 CREATE TABLE lesson(
-    lesson_id INT NOT NULL,
+    lesson_id INT AUTO_INCREMENT,
     title VARCHAR(50) NOT NULL,
     content TEXT NOT NULL,
     sequence_number INT NOT NULL,
@@ -78,4 +80,5 @@ CREATE TABLE lesson(
 
     CONSTRAINT pk_lesson PRIMARY KEY (lesson_id),
     CONSTRAINT fk_lessono_cos_code FOREIGN KEY (course_code) REFERENCES course(course_code)
-);
+)
+    ENGINE = InnoDB AUTO_INCREMENT = 1;
