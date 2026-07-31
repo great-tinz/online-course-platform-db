@@ -82,3 +82,6 @@ CREATE TABLE lesson(
     CONSTRAINT fk_lessono_cos_code FOREIGN KEY (course_code) REFERENCES course(course_code)
 )
     ENGINE = InnoDB AUTO_INCREMENT = 1;
+
+
+    
