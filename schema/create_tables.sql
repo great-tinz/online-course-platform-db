@@ -2,7 +2,7 @@ CREATE TABLE student(
     student_id INT AUTO_INCREMENT,
     first_name VARCHAR(20) NOT NULL,
     last_name VARCHAR(20) NOT NULL,
-    middle_name VARCHAR(20) NOT NULL,
+    middle_name VARCHAR(20) ,
     email VARCHAR(50) NOT NULL,
     join_date DATE NOT NULL,
 
@@ -16,7 +16,7 @@ CREATE TABLE instructor(
     instructor_id INT AUTO_INCREMENT,
     first_name VARCHAR(20) NOT NULL,
     last_name VARCHAR(20) NOT NULL,
-    middle_name VARCHAR(20) NOT NULL,
+    middle_name VARCHAR(20),
     email VARCHAR(50) NOT NULL,
     bio TEXT,
     CONSTRAINT pk_instruct PRIMARY KEY (instructor_id),
