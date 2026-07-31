@@ -3,7 +3,7 @@ CREATE TABLE student(
     first_name VARCHAR(20) NOT NULL,
     last_name VARCHAR(20) NOT NULL,
     middle_name VARCHAR(20) NOT NULL,
-    email VARCHAR(20),
+    email VARCHAR(20) NOT NULL,
     join_date DATE NOT NULL,
 
     CONSTRAINT pk_stu PRIMARY KEY (student_id),
