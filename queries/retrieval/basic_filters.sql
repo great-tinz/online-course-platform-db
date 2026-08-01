@@ -1,0 +1,14 @@
+SELECT first_name,last_name,email FROM student;
+SELECT first_name,last_name,middle_name,join_date FROM student WHERE join_date  BETWEEN '2025-06-01' AND '2025-06-30';
+SELECT course_code,price FROM course WHERE price > 80;
+SELECT first_name,last_name,middle_name,email FROM student WHERE email LIKE '%gmail.com';
+SELECT course_code,price FROM course WHERE price = 99.99;
+SELECT first_name,last_name FROM student WHERE middle_name IS NULL;
+SELECT first_name,last_name,middle_name,join_date FROM student WHERE join_date >= '2026-01-01';
+SELECT course_code,difficulty_level FROM course WHERE difficulty_level <> 'Beginner';
+SELECT student_id,course_code,enrollment_id,completion_status FROM enrollment WHERE completion_status IN ('Completed','In Progress');
+SELECT student_id,first_name,last_name,middle_name,join_date FROM student ORDER BY join_date ASC;
+SELECT student_id,email from student WHERE email LIKE '%kojo';
+SELECT instructor_id,first_name,last_name,email FROM instructor WHERE email NOT LIKE  '%gmail%';
+SELECT course_code,price FROM course WHERE price > 50 AND price < 100;
+SELECT enrollment_id,student_id FROM enrollment WHERE completion_status <> 'Not started';
