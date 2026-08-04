@@ -1,0 +1,10 @@
+SELECT course_code,COUNT(*) AS total_enrollments FROM enrollment GROUP BY course_code ORDER BY COUNT(*) ASC;
+SELECT YEAR(enrollment_date),COUNT(*) AS enrollments_that_year FROM enrollment GROUP BY YEAR(enrollment_date);
+SELECT course_code,COUNT(*) AS review_count FROM review GROUP BY course_code ORDER BY COUNT(*) DESC;
+SELECT difficulty_level,COUNT(*) AS number_of_courses FROM course GROUP BY difficulty_level ORDER BY COUNT(*) ASC;
+SELECT course_code,COUNT(*) AS student_count FROM enrollment GROUP BY course_code HAVING COUNT(*) = 1;
+SELECT difficulty_level, ROUND(AVG(price),2) AS avg_price FROM course GROUP BY difficulty_level ORDER BY ROUND(AVG(price),2) ASC;
+SELECT difficulty_level, ROUND(AVG(price),2) AS avg_price FROM course GROUP BY difficulty_level HAVING ROUND(AVG(price),2) > 100;
+SELECT COUNT(DISTINCT course_code) AS distinct_courses, COUNT(*) AS total_lessons FROM lesson;
+SELECT completion_status,COUNT(*) FROM enrollment GROUP BY completion_status ORDER BY COUNT(*) DESC;
+SELECT course_code,COUNT(*) AS total_enrollments FROM enrollment GROUP BY course_code HAVING COUNT(*) > 10 ORDER BY COUNT(*) DESC;
