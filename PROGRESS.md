@@ -10,7 +10,7 @@ If you are reading this after a break, a reinstall, or a new machine:
 2. It knows: the project, the database, every SQL level, every lesson learned, current status, known to-dos, and future plans.
 3. Then simply say **"continue where we left off"** — the AI should pick up at the current status line below.
 
-## Project status: IN PROGRESS — SQL training (Levels 1–5)
+## Project status: SQL training DONE (Levels 1–5) + consolidation sprint + GitHub push. NEXT: DBA phase
 
 ---
 
@@ -47,6 +47,29 @@ A complete database build for an **Online Course Platform**, done from scratch:
 - The full workflow: ER diagram → schema → data → queries → screenshots
 - Learning goal: master SQL by **understanding**, writing every query by hand (no AI-generated SQL), and learning from errors with "why" explanations
 
+### Database mission statement (also in README.md)
+
+The Online Course Platform database stores and organizes everything an e-learning business needs: who teaches, what is offered, who enrolls, how students progress, how they rate their experience, and what lessons each course contains. Its purpose is to turn raw enrollment, pricing, and review data into answers that drive business decisions.
+
+### Mission objectives
+
+1. Track every instructor and the courses they teach (price and difficulty level).
+2. Record student enrollment, join date, and completion status.
+3. Capture per-course, per-student feedback (rating 1–5 plus a comment).
+4. Organize each course's content as ordered lessons.
+5. Answer real business questions in SQL: revenue per instructor, most popular courses, silent students, best-rated courses.
+
+### Key entities
+
+| Entity | Role | Rows |
+|---|---|---|
+| instructor | The people who create and teach courses | 17 |
+| course | What is sold — price, difficulty, taught by one instructor | 31 |
+| student | The learners on the platform | 603 |
+| enrollment | Who takes which course and their completion status | 603 |
+| review | Student feedback, unique per student + course | 100 |
+| lesson | Ordered content inside a course (sequence 1, 2, 3) | 93 |
+
 ---
 
 ## Roadmap (where we are)
@@ -60,10 +83,11 @@ A complete database build for an **Online Course Platform**, done from scratch:
 | **Level 2** — Sort & Limit (ORDER BY, LIMIT) | ✅ Done |
 | **Level 3** — Summarize (GROUP BY, COUNT, AVG, SUM, MIN, MAX, HAVING, DISTINCT, ROUND, YEAR) | ✅ Done |
 | **Level 4** — JOINs (INNER, LEFT, aliases, COUNT(DISTINCT), multiplication trap) | ✅ Done |
-| **Level 5** — Subqueries (IN / NOT IN, scalar, EXISTS, nested) | 🔄 IN PROGRESS |
-| Consolidation sprint (fix files, README, final screenshots) | ⏳ Not started |
-| Push to GitHub | ⏳ Not started (user decides when) |
+| **Level 5** — Subqueries (IN / NOT IN, scalar, EXISTS, nested, derived tables) | ✅ Done |
+| Consolidation sprint (fix files, README, mission statement) | ✅ Done |
+| Push to GitHub | ✅ Done |
 | Scenario 4 — harder DB design from scratch | ⏳ Not started |
+| DBA phase — Aiven free MySQL, mysqldump, remote DB | ⏳ Not started |
 
 ---
 
@@ -96,11 +120,12 @@ A complete database build for an **Online Course Platform**, done from scratch:
 ```
 online_course_platform_db/
 ├── ER-Diagram-Online-Course-Platform.png
+├── README.md                     ← mission statement + how-to-run (repo landing page)
 ├── PROGRESS.md                  ← this file (kept updated)
 ├── schema/
 │   └── create_tables.sql        ← 6 CREATE TABLE statements (source of truth)
 ├── data/
-│   └── insertdata.sql           ← all INSERTs, FK-safe order (1,462 lines)
+│   └── insertdata.sql           ← all INSERTs, FK-safe order (93 lessons, matches live DB)
 ├── queries/
 │   └── retrieval/
 │       ├── select_all_queries.sql       ← DESC ×6 + SELECT * ×6
@@ -108,7 +133,7 @@ online_course_platform_db/
 │       ├── sorting_limit.sql            ← Level 2
 │       ├── summarize_aggregates.sql     ← Level 3
 │       ├── joins.sql                    ← Level 4
-│       └── subqueries.sql               ← Level 5 (in progress)
+│       └── subqueries.sql               ← Level 5 (Q1–Q10 + bonus)
 └── screenshot/
     ├── data-retrieval/          ← query result screenshots
     └── schema desc img/         ← DESC screenshots (6)
@@ -154,11 +179,15 @@ online_course_platform_db/
 - **Two-child-table trap:** joining a table to TWO child tables multiplies rows (DS101: 24 enrollments × 5 reviews = 120). Fix: `COUNT(DISTINCT ...)`.
 - Functional dependency: `GROUP BY course_code` lets you select `title` (PK determines it); `GROUP BY difficulty_level` does NOT let you select `course_code`.
 
-### Level 5 — Subqueries (in progress)
+### Level 5 — Subqueries (done)
 - Subquery = a query feeding another query. Inner runs **first**.
-- Shapes: **IN** (returns a list, used with `WHERE x IN (...)`), **scalar** (one value, used with `WHERE x > (...)`), **EXISTS** (yes/no check).
+- Shapes: **IN** (returns a list, used with `WHERE x IN (...)`), **scalar** (one value, used with `WHERE x > (...)`), **EXISTS** (yes/no check), **derived table** (a query in FROM — must have an alias).
 - You can always run the inner query alone to debug.
 - `NOT IN` is dangerous with NULLs; `NOT EXISTS` is safer (to use going forward).
+- **The 5 errors that teach the rules:** 1140 (bare column with aggregate → add GROUP BY), 1241 (subquery in AVG returned 2 columns → must be 1), 1242 (subquery in AVG returned many rows → must be 1 value), 1248 (derived table needs `AS alias`), 1064 (FRM typo / WHERE after GROUP BY / extra FROM clause).
+- **Derived-table pattern** for "compare each thing to the average of all things": count per group first, wrap in a subquery in FROM, `SELECT AVG(...)`, then compare with HAVING.
+- **Q1–Q10 + bonus set completed** (Q4, Q5, Q9, bonus left for later — marked "TO DO" in subqueries.sql).
+- **Analyst insight:** the average enrollment per course (20.79) is LOWER than the typical course (22) because CS105 (2) and WEB301 (1) drag it down — always check the spread, not just the average.
 
 ### The 3-step decision flow (for any SQL question)
 1. **Columns from more than one table?** → JOIN
@@ -185,35 +214,27 @@ online_course_platform_db/
 - **Session 5 (Level 2):** ORDER BY (ASC/DESC), LIMIT. Wrote `sorting_limit.sql`. Learned the "three mandatory pieces" rule.
 - **Session 6 (Level 3):** GROUP BY + COUNT/AVG/SUM/MIN/MAX, HAVING, DISTINCT, ROUND, YEAR. Wrote `summarize_aggregates.sql`. Learned the FROM→WHERE→GROUP BY→HAVING→ORDER BY→LIMIT processing order the hard way (ERROR 1055, 1111, 1064, 1054).
 - **Session 7 (Level 4):** INNER JOIN + LEFT JOIN + aliases. Wrote `joins.sql`. Learned the FK map, the two-child-table multiplication trap, and COUNT(DISTINCT) fix.
-- **Session 8 (Level 5, current):** Subqueries (IN, NOT IN, scalar, EXISTS). Wrote `subqueries.sql`. Currently mid-practice.
+- **Session 8 (Level 5):** Subqueries (IN, NOT IN, scalar, EXISTS, derived tables). Wrote `subqueries.sql`. Completed the Q1–Q10 + bonus practice set (Q4, Q5, Q9, bonus left for later, marked "TO DO" in the file).
+- **Session 9 (Consolidation sprint + push):** Created `README.md` (mission statement, mission objectives, key entities, ER diagram, how-to-run). Fixed files to match the live DB: added the 2 missing lessons to `insertdata.sql` (now 93), removed the invalid `SELECT SUM(*)` from `joins.sql`, removed the empty `queries/manipulation/` folder, rewrote `subqueries.sql` into the Q1–Q10 + bonus set. Set the GitHub repo description + topics. **Pushed to GitHub** — repo `great-tinz/online-course-platform-db` is now the cloud backup.
 - **Internship decision (parallel):** Chose Oasis Infobyte **Data Analytics** track (not Data Science). Decided NOT to post on LinkedIn → no certificate, but GitHub + CV line still count.
 
 ---
 
 ## 🗺️ Future plans (in exact order)
 
-1. **Finish Level 5** — subquery practice questions (Q1–Q9 in subqueries.sql): Tier 1 (WITH reviews ~100 / WITHOUT ~503 / courses with reviews ~29 / below-average price ~16), Tier 2 (nested), Tier 3 (SELECT-list subqueries as the clean Q9 fix, 31 rows).
-2. **Close Level 4 gaps** — Q8 (students with no reviews ~503), Q10 (Completed-enrollment counts, 31 rows).
-3. **Consolidation sprint** — fix known issues (below), final screenshots, write README.md.
-4. **Push to GitHub** — only when I say so. After this, the repo (AND this progress file) are backed up forever in the cloud.
-5. **Scenario 4** — a harder DB design from scratch (7+ tables, recursive relationship, subtyping, optional 1:1).
-6. **DBA phase** — deploy to Aiven free MySQL (1GB), migrate via mysqldump, work on a remote DB.
-7. **Python/pandas phase (parallel)** — Oasis Infobyte internship tasks, learned via a separate tutoring chat.
-8. **Future database work** — deeper DBA skills, more scenarios, building a real portfolio.
+1. **Finish the remaining subquery questions** — Q4, Q5, Q9, bonus (marked "TO DO" in `subqueries.sql`). Quick, just to close the set.
+2. **DBA phase** — deploy to Aiven free MySQL (1GB), migrate via mysqldump, work on a remote DB. Optionally add a read-only connection note to the README (NO passwords in a public repo).
+3. **Python/pandas phase (parallel)** — Oasis Infobyte internship tasks (EDA Retail Sales, Cleaning Data, House Prices regression), learned via a separate tutoring chat. Deadline Sept 15, 2026.
+4. **Scenario 4** — a harder DB design from scratch (7+ tables, recursive relationship, subtyping, optional 1:1).
+5. **Future database work** — deeper DBA skills, more scenarios, building a real portfolio.
 
 ---
 
-## Known issues / to-dos (consolidation sprint)
+## Known issues / to-dos
 
-1. **Lesson count mismatch:** the live DB has 93 lessons, but `insertdata.sql` only has 91. The 2 manual lessons added directly to MySQL are missing from the file:
-   - "Introduction to Data Collection" (CS105, seq 1)
-   - "Why Python Matters" (PY101, seq 1)
-   → Must add these 2 rows to the lesson INSERT so the file matches the DB. Otherwise re-running the file loses them.
-2. **basic_filters.sql** — lines 6, 11, 12 still show old (pre-fix) query versions. Update to the corrected ones that were verified in the terminal.
-3. **sorting_limit.sql** — stray letter "i" on line 1. Remove it.
-4. **summarize_aggregates.sql, joins.sql, subqueries.sql** — created by the user in terminal; verify contents/screenshots are saved.
-5. **README.md** — not yet created. Add a project README before pushing to GitHub.
-6. Screenshots — take final ones as each level is completed.
+1. **basic_filters.sql lines 6, 11, 12** — still need syncing to the versions the user verified live. Pending: user pastes the corrected 3 lines.
+2. **Remaining subquery questions** — Q4, Q5, Q9, bonus are marked "TO DO" in `subqueries.sql`. User runs them when ready.
+3. **Screenshots** — take final ones for the remaining subquery questions when they're run.
 
 ---
 

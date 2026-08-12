@@ -120,4 +120,3 @@ LEFT JOIN review r
 ON s.student_id = r.student_id GROUP BY student_id
 ORDER BY COUNT(r.review_id) DESC;
 
-SELECT SUM(*) FROM review;
