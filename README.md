@@ -1,12 +1,12 @@
-# Online Course Platform Database
+# 🎓 Online Course Platform Database
 
 A complete MySQL database for an e-learning business — designed from scratch, populated with realistic data, and exercised with real SQL questions across retrieval, filtering, aggregation, joins, and subqueries.
 
-## Mission statement
+## 🎯 Mission statement
 
 The Online Course Platform database stores and organizes everything an e-learning business needs: who teaches, what is offered, who enrolls, how students progress, how they rate their experience, and what lessons each course contains. Its purpose is to turn raw enrollment, pricing, and review data into answers that drive business decisions.
 
-## Mission objectives
+## ✅ Mission objectives
 
 1. Track every instructor and the courses they teach (price and difficulty level).
 2. Record student enrollment, join date, and completion status.
@@ -14,7 +14,7 @@ The Online Course Platform database stores and organizes everything an e-learnin
 4. Organize each course's content as ordered lessons.
 5. Answer real business questions in SQL: revenue per instructor, most popular courses, silent students, best-rated courses.
 
-## Key entities
+## 🏛️ Key entities
 
 | Entity | Role | Rows |
 |---|---|---|
@@ -25,11 +25,11 @@ The Online Course Platform database stores and organizes everything an e-learnin
 | review | Student feedback, unique per student + course | 100 |
 | lesson | Ordered content inside a course (sequence 1, 2, 3) | 93 |
 
-## Entity relationship diagram
+## 🔗 Entity relationship diagram
 
 ![ER Diagram](ER-Diagram-Online-Course-Platform.png)
 
-## How to run
+## 🚀 How to run
 
 Requirements: MySQL 8.4+ (built on MySQL 9.7.0).
 
@@ -52,7 +52,7 @@ Requirements: MySQL 8.4+ (built on MySQL 9.7.0).
    SOURCE queries/retrieval/joins.sql;
    ```
 
-## Project structure
+## 📁 Project structure
 
 ```
 online_course_platform_db/
@@ -74,7 +74,7 @@ online_course_platform_db/
     └── schema desc img/           ← table structure screenshots
 ```
 
-## Tech stack
+## 🛠️ Tech stack
 
 - MySQL (9.7.0)
 - InnoDB engine, primary/foreign keys, CHECK constraints, AUTO_INCREMENT
